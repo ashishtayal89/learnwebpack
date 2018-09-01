@@ -97,7 +97,7 @@ module.exports = {
 (thank you to James Daniel)
 
 
-# Learn Webpack
+# Basic
 
 A step by step guide
 
@@ -179,6 +179,7 @@ Webpack helps us figure out the order in which the modules or files which need t
 <img width="508" alt="screen shot 2018-09-01 at 11 37 41 pm" src="https://user-images.githubusercontent.com/12914629/44948707-0f24a580-ae40-11e8-8d88-be6930ac6b3c.png">
 
 There might be a situation where you could create cicular dependecy like in the imgae below. In this case the webpack would exit throwing a ciclular dependency error.
+
 <img width="507" alt="screen shot 2018-09-01 at 11 38 14 pm" src="https://user-images.githubusercontent.com/12914629/44948708-1c419480-ae40-11e8-9074-e76925de32e7.png">     
 
 ## Basic Build with Webpack
