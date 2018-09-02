@@ -101,7 +101,7 @@ module.exports = {
 
 A step by step guide
 
-## Introduction
+## MODULE 1 : Introduction
 
 ### The Need for a build tool
 
@@ -176,11 +176,247 @@ What are the thing we generaly handle in a build system?
 ### Module Systems 
 
 Webpack helps us figure out the order in which the modules or files which need to be loaded. In the below diagram the concerts.js depends upon Bands.js, Backbone.js, Lodash.js. But the Bands.js itself depends upon Backbone and Lodash. So the webpack would load these 2 files first and then Bands.
+
 <img width="508" alt="screen shot 2018-09-01 at 11 37 41 pm" src="https://user-images.githubusercontent.com/12914629/44948707-0f24a580-ae40-11e8-8d88-be6930ac6b3c.png">
 
 There might be a situation where you could create cicular dependecy like in the imgae below. In this case the webpack would exit throwing a ciclular dependency error.
 
 <img width="507" alt="screen shot 2018-09-01 at 11 38 14 pm" src="https://user-images.githubusercontent.com/12914629/44948708-1c419480-ae40-11e8-9074-e76925de32e7.png">     
 
-## Basic Build with Webpack
+## MODULE 2 : Basic Build with Webpack
 
+### CLI
+
+- `npm i webpack -g` => Install webpack globally.
+- Now create an app.js file and run `webpack ./app.js bundle.js` to build the app.js input file to bundle.js output file.
+
+<img width="509" alt="screen shot 2018-09-02 at 1 12 26 am" src="https://user-images.githubusercontent.com/12914629/44949358-5c5b4400-ae4d-11e8-9275-3f75004f6c6b.png">
+
+- Now you could just create an index.html file and include this bundle.js file in it. 
+
+<img width="518" alt="screen shot 2018-09-02 at 1 14 53 am" src="https://user-images.githubusercontent.com/12914629/44949373-9cbac200-ae4d-11e8-8cdd-6d8228cefe5c.png">
+
+- You would notice that there is a lot of code in the bundle.js which is injected by webpack.
+
+<img width="513" alt="screen shot 2018-09-02 at 1 17 25 am" src="https://user-images.githubusercontent.com/12914629/44949398-fae7a500-ae4d-11e8-846f-da55ec9872bc.png">
+
+### Adding a config file
+
+We can achieve the same result as we have in the case of CLI build by using a configuration file for the build. For this :
+1. Create a webpack.config.js file.
+2. Add an entry level file `./app.js`
+3. Add an output file `bundle.js` as below.
+
+<img width="244" alt="screen shot 2018-09-02 at 1 31 06 am" src="https://user-images.githubusercontent.com/12914629/44949478-e4424d80-ae4f-11e8-99b1-05e3bd09739a.png">
+4. Now build just by using the `webpack` command.
+
+### Watch mode and webpack dev server
+
+It becomes a little bit tedious to re-run the build manually everytime a file changes. For this we run the webpack in a Watch mode so that it can watch for changes and rebuild everytime a file changes.
+
+- Ways of running in Watch Mode :
+    1. Command line : `webpack --watch`
+    2. Add a `watch: true` key in the webpack.config.js file as below 
+        ```javascript
+        module.exports = {
+            entry: "./app.js",
+            output: {
+                filename: "bundle.js"
+            },
+            watch: true
+        }
+        ```
+- Dev Server
+
+    In order to use the HTTP protocol instead of the file protocol ie accessing the index file as `http://domain/index.html` instead of `file:///filepath` we need to setup a webpack dev server which can serve the index file over http. This will help us with the below task :
+    1. Serve file over HTTP
+    2. Reload the browser on rebuild => Hot reload
+
+    For this we install the webpack dev server globally by running `npm i webpack-dev-server -g` and `npm i webpack-cli -g`. Now we run `webpack-dev-server`.
+    Sometimes the global instalations might not work as expected so for that intall the dev server locally. The dev server uses the configuration file to build the project and serve it over http. If I make any change to my app.js file the webpack-dev-server will rebuild the project and reload the browser to serve the project.
+    **Note :** Here although we are not providing any index.html file in the url but it still request for index.html file. This is a browser feature.
+
+### Building Multiple Files
+
+1. Add multiple files using the module system : Follow the below steps
+    1. Create a login.js
+    2. require the login.js file in app.js file by doing `require(./login)`. This will tell webpack to load login.js while it parses the app.js. We could also use the ES6 module system and write `import login from "./login"`.
+
+2. To load a file which is accessible globaly : Follow the below steps
+    1. Create a file utils.js
+    2. Add that file in the webpack.config.js as below
+        ```javascript
+        module.exports = {
+            entry: ["./utils.js", "./app.js"],
+            output: {
+                filename: "bundle.js"
+            },
+            watch: true
+        }
+        ```
+    3. Now since you have changed the webpack.config.js you would need to restart the webpack-dev-server.
+
+### Using Loaders
+
+Loaders is a mechanish to teach webpack new tricks. By default webpack can combine and minify your javascript files, but it doesn't know much things appart from this. By providing loaders in webpack 1 OR rules in webpack 2 you tell the webpack how to process different types of files or even transpile them. 
+
+We are going to add 2 loaders right now
+1. __babel__ : This will help us to transpile the javascript versions.
+2. __jshint__ : This will help us in linting the js files.
+
+For adding babel to the project we follow the below steps :
+
+1. We intall the packages by adding them to devDependencies in our package.json file and running `npm i`
+    ```javascript
+      "devDependencies": {
+        "babel-core": "^6.26.3",
+        "babel-loader": "^7.1.5",
+        "babel-preset-env": "^1.7.0",
+        "babel-preset-es2015": "^6.24.1",
+        "eslint": "^5.5.0",
+        "eslint-loader": "^2.1.0",
+        "node-libs-browser": "^0.5.3",
+        "webpack": "^4.5.0",
+        "webpack-cli": "^3.1.0",
+        "webpack-dev-server": "^3.1.7"
+    }
+    ```
+2. Now we create a .babelrc file and add the presets as below 
+    ```javascript
+    {
+        "presets": ["es2015"]
+    }
+    ```
+3. Now we configure the webpack using the webpack.config.js to load the babel. For that we add a __module__ section which accepts an array of __rules__ or __loaders__ if you are using webpack 1.X.
+    The rules accept an array of object which have 3 basic properties :
+    1. test : This accepts a rejex and specifies the type of file or file extension it is going to handle to transpile the file. Mind you this is only to tell the loader about the type of files and not the webpack.
+    2. exclude : This also accepts a rejex and specifies the files or folder to be excluded from transpilation.
+    3. loader : This is the loader library which needs to be loaded.
+    ```javascript
+        module: {
+            rules: [
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    loader: "babel-loader"
+                }
+            ]
+        },
+    ```
+4. We could also use a .es6 extension instead of a js extension to write our es6 file. To tell webpack about this we would need to override the default list of extensions handled by webpack by providing the below configuration in the webpack.
+    ```javascript
+        resolve: {
+            extensions: ['.js','.es6']
+        }
+    ```
+5. We are ready to go now. Just run ```webpack-dev-server``` and it should run now.
+
+To introduce linting to our project we are going to add jshint :
+
+1. For this we will first install the eshint packages. 
+    ```javascript
+    {
+        "eslint": "^5.5.0",
+        "eslint-loader": "^2.1.0",
+    }
+    ```
+2. Then we will add a eslint config file ie .eslintrc or .eslintrc.js.
+3. Then we will configure our webpack to load these packages.Since we need the first lint the files before doing any other build process like compining and transpiling so we need to configure this as a preloader. Now here we add another property `enforce: 'pre'` which tell webpack that this is a pre loader and needs to be loaded before all other loaders. Also note that the `babel-loader` OR `eslint-loader` are just loaders that load babel and eslint respectively.
+    Webpack 2
+    ```javascript
+    module: {
+        loaders: [
+            {
+                test: /\.es6$/,
+                exclude: /node_modules/,
+                loader: "babel-loader"
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: "eslint-loader",
+                enforce: 'pre'
+            }
+        ]
+    },
+    ```
+    
+    Webpack 1
+    ```javascript
+    module: {
+        preLoaders: [
+            {
+                test: /\.js$/, 
+                exclude: /node_modules/, 
+                loader: "eslint-loader"
+            }
+        ],
+        loaders: [
+            {
+                test: /\.es6$/,
+                exclude: /node_modules/,
+                loader: "babel-loader"
+            }
+        ]
+    },
+    ```
+### Creating a start script
+
+Going forward we may come accross situation where we might need to pass some command line paramaters OR run multiple commands in the command line.
+This can easily get a little tedious and confusing. To resolve this issue we use the npm script where we can provide our command line commands.
+So we can add `"start": "webpack-dev-server"` into the script property of our package.json file.
+
+### Production vs Development Builds
+
+There are 2 modes to configure in webpack ie `production` and `development`. If you don't provide a mode the webpack will compile with a warning and will default to production mode. There are a few things which webpack does differently for production and development environment. 
+1. It minifies the files automaticaly in the production mode but not in the development mode.
+
+There are some things which we might want to remove or add from the production build. We need to do the below steps to do so.
+1. We need a separate webpack configuration file for our prod env. So we create a  `webpack-production.config.js`. 
+2. Now we can import our webpack.config.js in this file and manupulate it according to our production needs and then export the updated config. For instance if we want to remove the console.log from our prod env we do the following steps :
+    1. First we install a `strip-loader` using `npm i strip-loader --save-dev`.
+    2. Then we add the below lines of code into our webpack-production.config.js to inject this loader into the config file.
+    ```javascript
+    let StripLoader = require("strip-loader"),
+        devConfig = require("./webpack.config.js"),
+        stripLoader = {
+            test: [/\.js$/,/\.es6/],
+            exclude: /node_modules/,
+            loader: StripLoader.loader('console.log')
+        };
+    devConfig.module.rules.push(stripLoader);
+    module.exports = devConfig;
+    ```
+    Note that we are using this loader to strip any console.log statement from our code. You could also provide more strings using a comma like `StripLoader.loader('console.log','alert')`.You can clearly see that in the above code we have injected the stripLoader in the rules of the webpack.config.js file.
+    Also please note that since webpack uses the Commaon js module system internaly so we can use require to import the modules.
+3. Now we need to invoke our server using this configuration file. For that we do the following
+    1. `webpack-dev-sever --config webpack-production.config.js`
+    2. If we want to compile first and then serve the compiled bundle using a seperate server.
+        1. Install a separate server using `npm i http-server -g`
+        2. Run `webpack --config webpack-production.config.js`
+        3. Run `http-server`
+
+## Advanced Build With Webpack
+
+### Organizing files and folders
+
+Generaly we build our files into a folder named build or dist. Webpack builds the js files into a dist folder by default and server it from that folder when it gets a request for a resource. Issues :
+
+1. What if we want to build our files into a custom folder say `build`.
+2. What if our javascript source files are inside a folder other that the one which has webpack.config.js like `js` or `src`.
+3. What if we want to keep our index.html file inside a custom folder like `public` instead of the root directory or the directory in which we have webpack.config.js.
+4. What if we want to setup a different path for our resources in our index.html file that the default or root path. Like instead of `bundle.js` we want it to be  `public/assets/js/bundle.js`.
+
+All these issues can be resolved by configuring our webpack.config.js efficiently. Resolution :
+
+
+1. To resolve the first issue we make and `path: path.resolve('build/js/')` in the `output` property. This tell webpack that we want our output bundle.js file to reside in build/js folder.
+2. To resolve the second issue we setup a context property as `context: path.resolve('js')` which tells webpack that the source files reside in js folder. So the webpack will look for the utils and app file inside the js folder.
+3. To resolve the third issue we add 
+    ```javascript    
+    devServer: {
+        contentBase: 'public'
+    },
+    ```
+    This tells the webpack dev server that the resources need to be served from the public folder. So if it gets a request for `index.html` it looks for this file inside the public directory.
+4. In the fourth issue we need to create a mapper for our output files served by the devserver. We create an entry `publicPath: 'public/assets/js/'` in the output property which tells the dev server that if it gets a request for `public/assets/js/*.*` then it needs to look for it in the directory `build/js`
