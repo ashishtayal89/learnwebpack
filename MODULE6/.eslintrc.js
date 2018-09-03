@@ -79,7 +79,7 @@ module.exports = {
         "lines-between-class-members": "error",
         "max-classes-per-file": "error",
         "max-depth": "error",
-        "max-len": "error",
+        "max-len": "off",
         "max-lines": "error",
         "max-lines-per-function": "error",
         "max-nested-callbacks": "error",
@@ -229,7 +229,7 @@ module.exports = {
         ],
         "sort-imports": "error",
         "sort-keys": "off",
-        "sort-vars": "error",
+        "sort-vars": "off",
         "space-before-blocks": "error",
         "space-before-function-paren": "error",
         "space-in-parens": [

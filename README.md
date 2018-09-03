@@ -396,7 +396,7 @@ There are some things which we might want to remove or add from the production b
         2. Run `webpack --config webpack-production.config.js`
         3. Run `http-server`
 
-## Advanced Build With Webpack
+## Module 3 : Advanced Build With Webpack
 
 ### Organizing files and folders
 
@@ -420,3 +420,121 @@ All these issues can be resolved by configuring our webpack.config.js efficientl
     ```
     This tells the webpack dev server that the resources need to be served from the public folder. So if it gets a request for `index.html` it looks for this file inside the public directory.
 4. In the fourth issue we need to create a mapper for our output files served by the devserver. We create an entry `publicPath: 'public/assets/js/'` in the output property which tells the dev server that if it gets a request for `public/assets/js/*.*` then it needs to look for it in the directory `build/js`
+
+### Working with ES6 modules
+
+For this we would need our babel loader to convert the es6 module system to common js module system so that the webpack can then understand it.
+Instead of using `require("./login.js")` we use `import {login} from "./login"`. Also we export an object from login.js file by `export {login}`.
+
+### Add Source Map
+
+Source Map is the mechanism to replicate file structure in the browser as in the source code for development purpose. So all the modules in js folder will be replicated in the browser as is event though the files have been combined and compiled.
+
+We can achieve this by :
+1. Adding `-d` in front of `webpack` for build. Like `webpack -d`
+2. Adding `-d` in front of `webpack-dev-server` for serving the files to the browser. Like `webpack-dev-server -d`
+
+## Module 4 : Creating Multiple Bundles
+
+Sometime we need to build multiple js files instead of one. This can be the case of `lazy loading` or some othe case. For now we will create 3 separate bundles `about.js`,`contact.js`,`home.js` and serve them in 3 different request for `about.html`, `contact.html`, `home.html`. We would also like to keep the common code from the webpack in a `shared.js` file which can be used by all the 3 html files. 
+
+To do this we follow the below steps :
+1. Create `about_page.js`,`contact_page.js`,`home_page.js` in the js folder.
+2. Create 3 html files namely `about.html`,`contact.html`,`home.html` in the public folder. We also add the respective script files needed in each file.
+3. Update the webpack.config.js file to create 3 seperate js build files. For that we do the below steps :
+    1. We add different entry point for each file.
+        ```javascript 
+            entry: {
+                about: "./about_page.js",
+                contact: "./contact_page.js",
+                home: "./home_page.js"
+            }
+        ```
+    2. Then we tell the webpack to use the key of each entry point as the name of the output file.
+        ```javascript 
+            output: {
+                path: path.resolve('build/js/'),
+                publicPath: 'public/assets/js/',
+                filename: "[name].js"
+            },
+        ```
+4. Also to split each output file into chunks we add the below property to the config file.
+    ```javasctpt
+        optimization: {
+        splitChunks: {
+            chunks: "all",
+            name: "shared"
+        }
+    }
+    ```
+    In this we tell the webpack to split our code into chunks for `all` the entry points and name the chunk as `shared.js`.
+
+## Module 5 : Adding CSS to your build
+
+### Css and Style Loaders
+
+Generaly when we build our project using webpack, we load the Css as a webpack module just like a js file. This have some advantages over adding the css to the index.html file.
+1. We don't need to update the index.html file everytime we create a new css file.
+2. The browser hot reloades every time we do some change in the Css.
+
+To achieve this we follow the below steps :
+1. We install the `css-loader` and `style-loader` using the command `npm i css-loader style-loader --save-dev`.
+2. Now we create 2 css file `app.css` and `common.css` inside the css folder.
+3. Now we enable webpack to handle and load the css file extension by adding the loader in the rules of webpack.config.js. Please note how we have given the 2 loader together as `style-loader!css-loader`. Here we have provided 2 loader sperated by a !. This tell the webpack to first process the file with css-loader and then with style-loader. We can provide as many loaders separated by ! as we want.
+    ```javascript
+        {
+            test: /\.css$/,
+            exclude: /node_modules/,
+            loader: "style-loader!css-loader"
+        },
+    ```
+4. Finally we load the app.css and common.css in app.js using the common js module system. Note the files are loader in the order they are specified in the js file. So in this case first common.css is loader followed by app.css.
+    ```javascript
+        require("../css/app.css");
+        require("../css/common.css");
+    ```
+
+### Internal implementation of CSS and Style loaders
+
+ If we inspect the network call of the page we will see that there is no css file which loades in the browser. Then how does the CSS reach the browser?
+ The webpack injects the css files as seperate style tags in the head section of our index.html file. Apparently this is done by the `style-loader` we specified in the webpack.config.js file. So it makes it the internal css instead of the external css. Also note that the webpack will minify this css if you run it in production mode.
+ <img width="354" alt="screen shot 2018-09-03 at 1 17 40 am" src="https://user-images.githubusercontent.com/12914629/44960126-39956200-af17-11e8-84ed-4b67d37d9997.png">
+
+ ### Using SCSS and SASS
+
+To achieve this we follow the below steps :
+1. We install the `sass-loader` and `node-sass` using the command `npm i sass-loader node-sass --save-dev`.
+2. Now we create 2 css file `index.scss` inside the css folder.
+3. Now we enable webpack to handle and load the css file extension by adding the loader in the rules of webpack.config.js. Please note how we have given the 2 loader together as `style-loader!css-loader!sass-loader`. Here we have provided 2 loader sperated by a !. This tell the webpack to first process the file with sass-loader then with css-loader and then with style-loader. We can provide as many loaders separated by ! as we want.
+    ```javascript
+        {
+            test: /\.scss$/,
+            exclude: /node_modules/,
+            loader: "style-loader!css-loader!sass-loader"
+        },
+    ```
+4. Finally we load the index.scss in app.js using the common js module system. Note the files are loader in the order they are specified in the js file.
+    ```javascript
+        require("../css/index.scss");
+    ```
+
+ ### Using LESS
+
+To achieve this we follow the below steps :
+1. We install the `less-loader` and `less` using the command `npm i less-loader less --save-dev`.
+2. Now we create 2 css file `index.less` inside the css folder.
+3. Now we enable webpack to handle and load the css file extension by adding the loader in the rules of webpack.config.js. Please note how we have given the 2 loader together as `style-loader!css-loader!less-loader`. Here we have provided 2 loader sperated by a !. This tell the webpack to first process the file with sass-loader then with css-loader and then with style-loader. We can provide as many loaders separated by ! as we want.
+    ```javascript
+        {
+            test: /\.less$/,
+            exclude: /node_modules/,
+            loader: "style-loader!css-loader!less-loader"
+        },
+    ```
+4. Finally we load the index.less in app.js using the common js module system. Note the files are loader in the order they are specified in the js file.
+    ```javascript
+        require("../css/index.less");
+    ```
+
+## Module 6 : Creating a separate Css bundle
+
