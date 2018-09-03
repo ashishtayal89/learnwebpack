@@ -579,15 +579,15 @@ Generaly we would prefer to create a separate bundle for our css file than injec
                 })
             ]
         ```
-    4. We add the below scripts to the package.json file
-        ```javascript
-            "scripts": {
-                "start": "webpack-dev-server -d",
-                "startProd": "webpack-dev-server --config=webpack-production.config.js -d",
-                "build": "webpack -d",
-                "buildProd": "webpack --config=webpack-production.config.js"
-            },    
-        ```
-
+3. We add the below scripts to the package.json file
+    ```javascript
+        "scripts": {
+            "start": "webpack-dev-server -d",
+            "startProd": "webpack-dev-server --config=webpack-production.config.js -d",
+            "build": "webpack -d",
+            "buildProd": "webpack --config=webpack-production.config.js"
+        },    
+    ```
+4. Also note that we have done a new entry in the webpack-production.config.js file `process.env.NODE_ENV = "production";`. This is to set the environment to production so that this value when accessed inside webpack.config.js is set to "production". It is also very important that we write this before we `require("webpack.config.js")` in our webpack-production.config.js file.
 
     
