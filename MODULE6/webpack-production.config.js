@@ -1,3 +1,4 @@
+process.env.NODE_ENV = "production";
 let StripLoader = require("strip-loader"),
     devConfig = require("./webpack.config.js"),
     stripLoader = {

@@ -538,3 +538,56 @@ To achieve this we follow the below steps :
 
 ## Module 6 : Creating a separate Css bundle
 
+Generaly we would prefer to create a separate bundle for our css file than injecting it inline in the head of our html. For that we follow the below steps
+
+1. We first install new package `mini-css-extract-plugin` using `npm i mini-css-extract-plugin --save-dev`.
+2. Then we configure our webpack.config.js as below :
+    1. We import this plugin using `MiniCssExtractPlugin = require("mini-css-extract-plugin"),` statement.
+    2. We add the loaders for sass,scss,css,less extension in the rules section as below 
+        ```javascript
+            {
+                test: /\.(sa|sc|c)ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader'
+                ]
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'less-loader'
+                ]
+            }
+            // {
+            //     test: /\.(sa|sc|c)ss$/,
+            //     use: [
+            //         devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+            //         'css-loader',
+            //         'sass-loader'
+            //     ]
+            // },
+        ```
+        Please note that in the above case we define sass,scss and css extensions together and less separately. In the commented section please note that we have used the style-loader instead of the MiniCssExtractPlugin.loader to append the css in the html itself.
+    3. Now we add this plugin in the plugins section which tells the webpack that it needs to use this plugin.Also we tell this loader plugin that what would be the name of the output file by the below entry. The location of the output file is provided to this loader by the webpack using the output.path property.
+        ```javascript
+            plugins: [
+                new MiniCssExtractPlugin({
+                    filename: devMode ? '[name].css' : '[name].[hash].css'
+                })
+            ]
+        ```
+    4. We add the below scripts to the package.json file
+        ```javascript
+            "scripts": {
+                "start": "webpack-dev-server -d",
+                "startProd": "webpack-dev-server --config=webpack-production.config.js -d",
+                "build": "webpack -d",
+                "buildProd": "webpack --config=webpack-production.config.js"
+            },    
+        ```
+
+
+    

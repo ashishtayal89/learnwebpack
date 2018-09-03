@@ -1,12 +1,15 @@
-let path = require('path'),
-    ExtractTextPlugin = require("extract-text-webpack-plugin");
+const path = require('path'),
+    MiniCssExtractPlugin = require("mini-css-extract-plugin"),
+    devMode = process.env.NODE_ENV !== 'production';
 module.exports = {
     context: path.resolve('js'),
-    entry: ["./utils", "./app"],
+    entry: {
+        bundle: "./app.js"
+    },
     output: {
         path: path.resolve('build/'),
         publicPath: 'public/assets/',
-        filename: "bundle.js"
+        filename: "[name].js"
     },
     devServer: {
         contentBase: 'public'
@@ -19,20 +22,29 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: "babel-loader"
             },
+            // {
+            //     test: /\.(sa|sc|c)ss$/,
+            //     use: [
+            //         devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+            //         'css-loader',
+            //         'sass-loader'
+            //     ]
+            // },
             {
-                test: /\.css$/,
-                exclude: /node_modules/,
-                loader: ExtractTextPlugin.extract("style-loader","css-loader")
-            },
-            {
-                test: /\.scss$/,
-                exclude: /node_modules/,
-                loader: ExtractTextPlugin.extract("style-loader","css-loader!sass-loader")
+                test: /\.(sa|sc|c)ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader'
+                ]
             },
             {
                 test: /\.less$/,
-                exclude: /node_modules/,
-                loader: ExtractTextPlugin.extract("style-loader","css-loader!less-loader")
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'less-loader'
+                ]
             },
             {
                 test: /\.js$/,
@@ -46,5 +58,9 @@ module.exports = {
         extensions: ['.js','.es6']
     },
     mode: "development",
-    plugins: [new ExtractTextPlugin("styles.css")]
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: devMode ? '[name].css' : '[name].[hash].css'
+        })
+    ]
 }
