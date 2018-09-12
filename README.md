@@ -439,6 +439,9 @@ To achieve this we follow the below steps :
 
 ## Module 6 : Creating a separate Css bundle
 
+
+### Creating separat Css bundle
+
 Generaly we would prefer to create a separate bundle for our css file than injecting it inline in the head of our html. For that we follow the below steps
 
 1. We first install new package `mini-css-extract-plugin` using `npm i mini-css-extract-plugin --save-dev`.
@@ -490,4 +493,75 @@ Generaly we would prefer to create a separate bundle for our css file than injec
         },    
     ```
 4. Also note that we have done a new entry in the webpack-production.config.js file `process.env.NODE_ENV = "production";`. This is to set the environment to production so that this value when accessed inside webpack.config.js is set to "production". It is also very important that we write this before we `require("webpack.config.js")` in our webpack-production.config.js file.
+
+### Adding an auto prefixer
+
+Auto prefixers is a post css plugin which parses your css and add vendor prefixes.
+
+## Module 7 : Adding Images and Fonts
+
+### Adding Images
+
+To achieve this we follow the below steps :
+1. We install the `url-loader` and `file-loader` using the command `npm i url-loader file-loader --save-dev`.
+2. Now we create add an image file `webpakc.jpeg` inside the images folder.
+3. Now we enable webpack to handle and load the image file of extension type .png or .jpg or .jpeg by adding the loader in the rules of webpack.config.js. Please note that we have padded a `limit=1000` paramter to the loader which tells the loader that it needs to serve the image file in base64 encoded format if the size is less than 1000 bytes.
+    ```javascript
+        {
+            test: /\.(png|jpg|jpeg)$/,
+            exclude: /node_modules/,
+            loader: 'url-loader?limit=1000'
+        },
+    ```
+4. Now we add the below code to add the image file in the app.js file 
+    ```javascript
+        let img = document.createElement("img");
+        img.style.height = "25%";
+        img.style.width = "25%";
+        img.src = require("../Images/webpack.jpeg");
+        document.getElementById("image_Tag").appendChild(img);
+    ```
+5. Also we can add the image as a css background like we have done in app.css.
+    ```css
+        #css_Image{
+            background: url('../images/webpack.jpeg');
+            height: 150px;
+            width:  150px;
+        }
+    ```
+
+**Note :**  The webpack parses all the app.css file and see if the `../images/webpack.jpeg` is present at the give physical location. Then it changes this url to the **publicPath** given in the webpack.config.js file. Same happens with the image give in the app.js file.
+**Bug :** Currently the images are not loading in css since the path being generated for images in css is `public/assets/public/assets/<imageName>.jpeg` which is wrong. Need to figure out a solution. One way to resolve this is to remove `MiniCssExtractPlugin.loader` and instead use `style-loader`.
+
+Base 64 Encodes Image :
+<img width="524" alt="screen shot 2018-09-11 at 11 03 40 pm" src="https://user-images.githubusercontent.com/12914629/45377097-35ec9400-b617-11e8-929b-31fd403a842b.png">
+
+Url Image :
+<img width="550" alt="screen shot 2018-09-11 at 11 02 11 pm" src="https://user-images.githubusercontent.com/12914629/45377095-34bb6700-b617-11e8-837d-2f5066edf16a.png">
+
+### Adding fonts
+
+This is very simple :
+1. Add the fonts in the fonts folder.
+2. Add the fonts in the app.css file.
+    ```css
+        @font-face{
+            font-family: 'OpenSans';
+            src: url("../fonts/OpenSans-Bold.ttf");
+            src: url("../fonts/OpenSans-BoldItalic.ttf");
+        }
+    ```
+3. Add the fonts extension in the `url-loader`.
+    ```javascript
+            {
+                test: /\.(png|jpg|jpeg|ttf)$/,
+                exclude: /node_modules/,
+                loader: 'url-loader?limit=1000'
+            }
+    ```
+
+## Module 8 : Webpack Tools
+
+### Using Connect Middleware
+
 

@@ -22,18 +22,11 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: "babel-loader"
             },
-            // {
-            //     test: /\.(sa|sc|c)ss$/,
-            //     use: [
-            //         devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
-            //         'css-loader',
-            //         'sass-loader'
-            //     ]
-            // },
             {
                 test: /\.(sa|sc|c)ss$/,
+                exclude: /node_modules/,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    devMode === "production" ? MiniCssExtractPlugin.loader : "style-loader",
                     'css-loader',
                     'postcss-loader',
                     'sass-loader'
@@ -41,12 +34,18 @@ module.exports = {
             },
             {
                 test: /\.less$/,
+                exclude: /node_modules/,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    devMode === "production" ? MiniCssExtractPlugin.loader : "style-loader",
                     'css-loader',
                     'postcss-loader',
                     'less-loader'
                 ]
+            },
+            {
+                test: /\.(png|jpg|jpeg|ttf)$/,
+                exclude: /node_modules/,
+                loader: 'url-loader?limit=1000'
             },
             {
                 test: /\.js$/,

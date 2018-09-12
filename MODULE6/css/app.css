@@ -1,3 +1,4 @@
 .myapp {
     color: black;
+    background: linear-gradient(to top, black, white);
 }

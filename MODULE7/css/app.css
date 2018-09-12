@@ -1,0 +1,16 @@
+.myapp {
+    color: black;
+    background: linear-gradient(to top, black, white);
+}
+
+@font-face{
+    font-family: 'OpenSans';
+    src: url("../fonts/OpenSans-Bold.ttf");
+    src: url("../fonts/OpenSans-BoldItalic.ttf");
+}
+
+#css_Image{
+    background: url('../images/webpack.jpeg');
+    height: 150px;
+    width:  150px;
+}
