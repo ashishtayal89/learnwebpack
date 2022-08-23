@@ -1,4 +1,7 @@
+console.log("Load index.js");
+
 import _ from "lodash";
+import module1 from './module1.js';
 
 function component() {
   const element = document.createElement("div");
@@ -14,6 +17,6 @@ document.body.appendChild(component());
 
 import(/* webpackChunkName: "async" */ "./lazy").then(
   ({ default: LazyComponent }) => {
-    console.log(`${LazyComponent.Name} Loaded`);
+    console.log(`Load ${LazyComponent.Name}.js`);
   }
 );
