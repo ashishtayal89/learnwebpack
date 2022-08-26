@@ -584,9 +584,9 @@ This is very simple :
 
 ## Module 9 : Key concepts
 
-1. Entry : Entry point for webpack for bundling. Webpack create a dependency graph based on which the bundling is done.
-2. Output : The output of the bundled entry point.
-3. Loader : By default webpack only understand .js and .json so to load modules of any other kind we need to add a loader. The loader converts these extensions into a webpack understandable module.
-4. Plugin : It provides extra capabilites to webpack. It hooks into webpack pipeline and adds new capabilites to it.
-5. Mode : production(default), development, none.
+1. Entry(entry) : Entry point for webpack for bundling. Webpack create a dependency graph based on which the bundling is done.
+2. Output(output) : The output of the bundled entry point.
+3. Loader(module) : By default webpack only understand .js and .json so to load modules of any other kind we need to add a loader. The loader converts these extensions into a webpack understandable module.
+4. Plugin(plugins) : It provides extra capabilites to webpack. It hooks into webpack pipeline and adds new capabilites to it.
+5. Mode(plugins) : production(default), development, none.
 6. Shimming : It helps in injecting some global or local variable into our bundles. Helps in adding polyfills if required.

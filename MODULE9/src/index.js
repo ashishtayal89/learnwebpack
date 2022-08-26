@@ -1,11 +1,12 @@
 console.log("Load index.js");
 
 import _ from "lodash";
-import module1 from './module1.js';
+import module1 from "./module1.js";
+import "./index.scss";
 
 function component() {
   const element = document.createElement("div");
-
+  element.className = "main title";
   // Lodash, currently included via a script, is required for this line to work
   // Lodash, now imported by this script
   element.innerHTML = _.join(["Hello", "webpack"], " ");
